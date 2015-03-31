@@ -16,6 +16,7 @@
 
 package com.graphaware.test.performance;
 
+import net.lingala.zip4j.core.ZipFile;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -23,6 +24,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.util.*;
@@ -168,7 +170,12 @@ public abstract class PerformanceTestSuite {
      * @param params          with which the test will be run.
      */
     private void createDatabase(PerformanceTest performanceTest, Map<String, Object> params) {
-        GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(temporaryFolder.getRoot().getPath());
+        GraphDatabaseBuilder graphDatabaseBuilder;
+        if (performanceTest.getExistingDatabasePath() != null) {
+            graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(unzipDatabase(temporaryFolder, performanceTest.getExistingDatabasePath()));
+        } else {
+            graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(temporaryFolder.getRoot().getPath());
+        }
 
         Map<String, String> dbConfig = performanceTest.databaseParameters(params);
         if (dbConfig != null) {
@@ -179,7 +186,20 @@ public abstract class PerformanceTestSuite {
 
         registerShutdownHook(database);
 
-        performanceTest.prepareDatabase(database, params);
+        if (performanceTest.getExistingDatabasePath() == null) {
+            performanceTest.prepareDatabase(database, params);
+        }
+    }
+
+    private String unzipDatabase(TemporaryFolder tmp, String zipLocation) {
+        try {
+            ZipFile zipFile = new ZipFile(zipLocation);
+            zipFile.extractAll(tmp.getRoot().getAbsolutePath());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return tmp.getRoot().getAbsolutePath();
     }
 
     /**
