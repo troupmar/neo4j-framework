@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -103,7 +104,8 @@ public abstract class PerformanceTestSuite {
 
         //dry runs - ignore results
         for (int i = 0; i < performanceTest.dryRuns(params); i++) {
-            LOG.debug("Dry run " + (i + 1));
+            // TODO change to LOG.debug
+            LOG.info("Dry run " + (i + 1));
             run(performanceTest, params);
         }
 
@@ -111,7 +113,8 @@ public abstract class PerformanceTestSuite {
 
         //real runs
         for (int i = 0; i < performanceTest.measuredRuns(); i++) {
-            LOG.debug("Measured run " + (i + 1));
+            // TODO change to LOG.debug
+            LOG.info("Measured run " + (i + 1));
             testResults.acceptResult(params, run(performanceTest, params));
         }
 
@@ -172,7 +175,10 @@ public abstract class PerformanceTestSuite {
     private void createDatabase(PerformanceTest performanceTest, Map<String, Object> params) {
         GraphDatabaseBuilder graphDatabaseBuilder;
         if (performanceTest.getExistingDatabasePath() != null) {
-            graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(unzipDatabase(temporaryFolder, performanceTest.getExistingDatabasePath()));
+            String databasePath = unzipDatabase(temporaryFolder, performanceTest.getExistingDatabasePath());
+            String databaseFile = new File(performanceTest.getExistingDatabasePath()).getName();
+            databaseFile = databaseFile.replace(".zip", "");
+            graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(databasePath + "/" + databaseFile);
         } else {
             graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(temporaryFolder.getRoot().getPath());
         }
@@ -186,9 +192,8 @@ public abstract class PerformanceTestSuite {
 
         registerShutdownHook(database);
 
-        if (performanceTest.getExistingDatabasePath() == null) {
-            performanceTest.prepareDatabase(database, params);
-        }
+        performanceTest.prepareDatabase(database, params);
+
     }
 
     private String unzipDatabase(TemporaryFolder tmp, String zipLocation) {
