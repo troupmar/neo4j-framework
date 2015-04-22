@@ -18,7 +18,6 @@ package com.graphaware.example.plugin;
 
 import com.graphaware.test.integration.WrappingServerIntegrationTest;
 import com.graphaware.test.unit.GraphUnit;
-import com.graphaware.test.util.TestUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -32,8 +31,8 @@ public class HelloWorldServerPluginApiTest extends WrappingServerIntegrationTest
 
     @Test
     public void shouldCreateAndReturnNode() {
-        TestUtils.get(baseNeoUrl() + "/db/data/ext/HelloWorldServerPlugin/graphdb/hello_world_node", 200);
-        String result = TestUtils.post(baseNeoUrl() + "/db/data/ext/HelloWorldServerPlugin/graphdb/hello_world_node", 200);
+        httpClient.get(baseNeoUrl() + "/db/data/ext/HelloWorldServerPlugin/graphdb/hello_world_node", 200);
+        String result = httpClient.post(baseNeoUrl() + "/db/data/ext/HelloWorldServerPlugin/graphdb/hello_world_node", 200);
 
         assertTrue(result.contains(" \"hello\" : \"world\""));
         GraphUnit.assertSameGraph(getDatabase(), "CREATE (:HelloWorld {hello:'world'})");

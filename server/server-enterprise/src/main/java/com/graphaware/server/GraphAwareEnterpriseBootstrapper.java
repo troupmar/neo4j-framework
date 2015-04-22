@@ -20,7 +20,7 @@ import org.neo4j.server.NeoServer;
 import org.neo4j.server.enterprise.EnterpriseBootstrapper;
 
 /**
- * {@link org.neo4j.server.CommunityBootstrapper} that uses {@link GraphAwareEnterpriseNeoServer}.
+ * {@link org.neo4j.server.enterprise.EnterpriseBootstrapper} that uses {@link GraphAwareEnterpriseNeoServer}.
  */
 public class GraphAwareEnterpriseBootstrapper extends EnterpriseBootstrapper {
 

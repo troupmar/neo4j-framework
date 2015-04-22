@@ -1,5 +1,19 @@
+2.2.1.31:
+    - Fixed a bug where nodes with changed labels and no changed properties were not reported as changed
+
+2.2.1.30:
+    - Update to Neo4j 2.2.1
+    - TestUtils refactoring
+    - Webadmin bootstrapped in integration tests
+    - Iron out minor Maven glitches caused by last release
+
+2.2.0.30:
+    - Module POM cleanup
+
 2.2.0.29:
     - POM reorganisation
+    - UUID generation part of the framework
+    - ability to better extend web server to support GraphAware Enterprise
 
 2.2.0.28:
     - updated Framework to Neo4j 2.2.0
